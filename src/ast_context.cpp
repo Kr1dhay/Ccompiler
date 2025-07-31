@@ -51,7 +51,7 @@ namespace ast {
         stack.emplace_back();
     }
 
-    void Context::exitScope(std::ostream &dst) {
+    void Context::exitScope() {
         if (!stack.empty()) {
             stack.pop_back();
         }

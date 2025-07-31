@@ -101,15 +101,29 @@ class Context
     public:
         std::string makeLabel(std::string base);
 
-        bool isGlobal(const std::string &name)
+        bool isGlobal(const std::string &name);
 
-        bool isEnum(const std::string &name) {
-            return enums.find(name) != enums.end();
-        }
+        // bool isEnum(const std::string &name) {
+        //     return enums.find(name) != enums.end();
+        // }
 
         void enterScope();
-        void exitScope(std::ostream &dst);
+        // void exitScope(std::ostream &dst);
+        void exitScope();
+
         int allocate();
 };
+
+// What could go inside Context now:
+// A method like emitFunctionPrologue(std::ostream& stream)
+// ⤷ Handles stack adjustment, saving ra and fp
+
+// A method like emitFunctionEpilogue(std::ostream& stream)
+// ⤷ Restores fp, ra, resets stack
+
+// A register allocator:
+
+// int allocateRegister();     // e.g. return t0-t6 if free
+// void freeRegister(int reg); // frees after use
 
 } // namespace ast
