@@ -4,15 +4,21 @@
 
 namespace ast{
 
-class BinaryOp : public Node{
+enum class BinOp {
+    Add,
+    Sub,
+    Mul,
+    Div
+};
+
+class BinaryOperator : public Node{
     private:
-        std::string op_;
+        BinOp op_;
         NodePtr left_;
         NodePtr right_;
 
     public:
-        BinaryOp(std::string op, NodePtr left, NodePtr right)
-        : op_(std::move(op)), left_(std::move(left)), right_(std::move(right)) {}
+        BinaryOperator(BinOp op_, NodePtr left, NodePtr right);
 
     virtual void EmitRISC(std::ostream &stream, Context &context) const override;
     virtual void Print(std::ostream &stream) const override;

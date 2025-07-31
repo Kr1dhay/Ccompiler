@@ -142,7 +142,8 @@ multiplicative_expression
 	;
 
 additive_expression
-	: multiplicative_expression
+    : multiplicative_expression { $$ = $1; }
+    | additive_expression '+' multiplicative_expression { $$ = new BinaryOperator(BinOp::Add, NodePtr($1), NodePtr($3)); }
 	;
 
 shift_expression
