@@ -13,10 +13,11 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
     declarator_->EmitRISC(stream, context);
 
     // === Prologue ===
-    stream << "addi sp, sp, -16" << std::endl;      // Allocate space for ra + fp
-    stream << "sw ra, 12(sp)" << std::endl;         // Save return address
-    stream << "sw s0, 8(sp)" << std::endl;          // Save old frame pointer (s0 is fp)
-    stream << "addi s0, sp, 16" << std::endl;       // Set new frame pointer (fp = sp + 16)
+    stream << "addi sp, sp, -8" << std::endl;      // 4 for ra + 4 for s0
+    stream << "sw ra, 4(sp)" << std::endl;         // ra saved at sp + 4
+    stream << "sw s0, 0(sp)" << std::endl;         // s0 saved at sp + 0
+    stream << "addi s0, sp, 8" << std::endl;       // fp = original sp
+
 
     context.enterScope(); // Updates internal state
 
@@ -30,13 +31,18 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
 
 
     // === Epilogue ===
-    context.exitScope(); // Optional: could eventually emit variable deallocations
+
+    // int dynamicSize = -context.getCurrentFrameOffset();  // Total size used for locals
+    // int totalFrameSize = 8 + dynamicSize;
+    int totalFrameSize = 8; // 4 for ra + 4 for s0, no locals in this example
 
     stream << returnLabel << ":" << std::endl;
-    stream << "lw ra, 12(sp)" << std::endl;
-    stream << "lw s0, 8(sp)" << std::endl;
-    stream << "addi sp, sp, 16" << std::endl;
+    stream << "lw ra, 4(sp)" << std::endl;
+    stream << "lw s0, 0(sp)" << std::endl;
+    stream << "addi sp, sp, " << totalFrameSize << std::endl;
     stream << "jr ra" << std::endl;
+
+    context.exitScope();  // Now it's safe to pop the frame
 
 }
 
