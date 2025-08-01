@@ -12,7 +12,8 @@ CXXFLAGS += -rdynamic # to get more helpful traces when debugging
 CXXFLAGS += --coverage # enable code coverage
 CXXFLAGS += -I include # look for header files in the `include` directory
 
-SOURCES := $(wildcard src/*.cpp) # all .cpp files are to be considered source files
+#SOURCES := $(wildcard src/*.cpp) # all .cpp files are to be considered source files
+SOURCES := $(shell find src -name "*.cpp")
 DEPENDENCIES := $(patsubst src/%.cpp,build/%.d,$(SOURCES))
 
 OBJECTS := $(patsubst src/%.cpp,build/%.o,$(SOURCES))
