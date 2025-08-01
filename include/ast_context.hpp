@@ -107,7 +107,7 @@ class Context
         //     return enums.find(name) != enums.end();
         // }
 
-        void enterScope();
+        void enterScope(std::ostream &dst);
         // void exitScope(std::ostream &dst);
         void exitScope();
 

@@ -57,7 +57,7 @@
 %%
 
 ROOT
-	: translation_unit { g_root = $1; }
+	: translation_unit { g_root = new Root(NodePtr($1)); }
 
 translation_unit
 	: external_declaration { $$ = $1; }

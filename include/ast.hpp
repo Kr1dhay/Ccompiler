@@ -13,5 +13,6 @@
 #include "ast_constant.hpp"
 #include "ast_context.hpp"
 #include "operators/ast_binary_operator.hpp"
+#include "ast/ast_root.hpp"
 
 ast::NodePtr ParseAST(std::string file_name);

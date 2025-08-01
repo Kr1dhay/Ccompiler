@@ -47,8 +47,15 @@ namespace ast {
             return globals.find(name) != globals.end();
         }
 
-    void Context::enterScope() {
+    void Context::enterScope(std::ostream &dst) {
         stack.emplace_back();
+        auto& frame = stack.back();
+        frame.offset = 0; // locals start at offset 0 (we subtract to grow down)
+
+        dst << "addi sp, sp, -16" << std::endl;     // allocate space for ra + fp
+        dst << "sw ra, 12(sp)" << std::endl;        // save ra
+        dst << "sw fp, 8(sp)" << std::endl;         // save old frame pointer
+        dst << "addi fp, sp, 16" << std::endl;      // set new frame pointer
     }
 
     void Context::exitScope() {
