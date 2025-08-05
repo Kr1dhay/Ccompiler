@@ -151,17 +151,34 @@ conditional_expression
   : logical_or_expression          { $$ = $1; }
   ;
 
+
+
 /*--- NEW: assignment_expression to support '=' ---*/
 assignment_expression
   : conditional_expression         { $$ = $1; }
-//   | unary_expression '=' assignment_expression
-//       { $$ = new BinaryOperator(BinOp::Assign, NodePtr($1), NodePtr($3)); } /* NEW */
+  | unary_expression assignment_operator assignment_expression {
+		$$ = new AssignmentExpression(NodePtr($1), NodePtr($2), NodePtr($3));
+	} /* NEW */
 ;
+
+assignment_operator
+	: '='
+	// | MUL_ASSIGN
+	// | DIV_ASSIGN
+	// | MOD_ASSIGN
+	// | ADD_ASSIGN
+	// | SUB_ASSIGN
+	// | LEFT_ASSIGN
+	// | RIGHT_ASSIGN
+	// | AND_ASSIGN
+	// | XOR_ASSIGN
+	// | OR_ASSIGN
+	;
 
 
 expression
   : assignment_expression          { $$ = $1; }
-  | expression ',' assignment_expression
+//   | expression ',' assignment_expression
     //   { /* sequence expr: you can chain or wrap in SequenceNode */ }
 ;
 
@@ -172,12 +189,11 @@ constant_expression
 /*--- NEW: declaration and init-declarator rules ---*/
 declaration
   : declaration_specifiers ';'                                                   { $$ = new Declaration(NodePtr($1), {}); }
-//   | declaration_specifiers init_declarator_list ';'
-//       { $$ = new Declaration(NodePtr($1), *$2); delete $2; } /* NEW */
+  | declaration_specifiers init_declarator_list ';' { $$ = new Declaration(NodePtr($1), *$2); delete $2; } /* NEW */
 ;
 
 declaration_specifiers
-  : type_specifier                                                                           { $$ = $1; }
+  : type_specifier { $$ = $1; }
 ;
 
 type_specifier
@@ -197,19 +213,18 @@ type_specifier
 
 
 init_declarator_list
-  : init_declarator                                                              // { $$ = new NodeList(NodePtr($1)); } /* NEW */
+  : init_declarator { $$ = new NodeList(NodePtr($1)); } /* NEW */
 //   | init_declarator_list ',' init_declarator
 //       { $1->PushBack(NodePtr($3)); $$ = $1; }
 ;
 
 init_declarator
-  : declarator                                                                    { $$ = $1; }
-//   | declarator '=' initializer
-//       { $$ = new InitDeclarator(NodePtr($1), NodePtr($3)); } /* NEW */
+  : declarator { $$ = $1; }
+  | declarator '=' initializer { $$ = new InitDeclarator(NodePtr($1), NodePtr($3)); } /* NEW */
 ;
 
-// initializer
-//   : assignment_expression                                                         { $$ = $1; } /* NEW */
+initializer
+  : assignment_expression  {$$ = $1;} /* NEW */
 //   | '{' initializer_list '}'                                                       { /* for aggregates later */ }
 // ;
 

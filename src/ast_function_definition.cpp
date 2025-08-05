@@ -7,10 +7,14 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
     // Emit assembler directives.
     // TODO: these are just examples ones, make sure you understand
     // the concept of directives and correct them.
-    // stream << ".text" << std::endl;
     // stream << ".globl f" << std::endl;
 
+    stream << ".globl ";
     declarator_->EmitRISC(stream, context);
+    stream << std::endl;
+
+    declarator_->EmitRISC(stream, context);
+    stream << ":" << std::endl;
 
     // === Prologue ===
     stream << "addi sp, sp, -8" << std::endl;      // 4 for ra + 4 for s0
