@@ -103,6 +103,10 @@ class Context
 
         bool isGlobal(const std::string &name);
 
+        void setCurrentEndLabel(const std::string& label);
+
+        std::string getCurrentEndLabel() const;
+
         // bool isEnum(const std::string &name) {
         //     return enums.find(name) != enums.end();
         // }

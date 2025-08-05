@@ -4,6 +4,11 @@ namespace ast {
 
 void DirectDeclarator::EmitRISC(std::ostream& stream, Context& context) const
 {
+    stream << ".globl ";
+    identifier_->EmitRISC(stream, context);
+    stream << std::endl;
+
+
     identifier_->EmitRISC(stream, context);
     stream << ":" << std::endl;
 }

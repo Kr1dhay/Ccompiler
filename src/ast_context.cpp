@@ -49,6 +49,8 @@ namespace ast {
 
     void Context::enterScope() {
         stack.emplace_back();
+        auto& frame = stack.back();
+        frame.offset = 0; // locals start at offset 0 (we subtract to grow down)
     }
 
     void Context::exitScope() {
@@ -56,6 +58,21 @@ namespace ast {
             stack.pop_back();
         }
     }
+
+    void Context::setCurrentEndLabel(const std::string& label) {
+        if (stack.empty()) {
+            throw std::runtime_error("No active stack frame to set end label.");
+        }
+        stack.back().endLabel = label;
+    }
+
+    std::string Context::getCurrentEndLabel() const {
+        if (stack.empty()) {
+            throw std::runtime_error("No active stack frame to get end label.");
+        }
+        return stack.back().endLabel;
+    }
+
     int Context::allocate() {
         return registers.allocate();
     }

@@ -17,19 +17,19 @@ void BinaryOperator::EmitRISC(std::ostream &stream, Context &context) const
 
     switch (op_) {
         case BinOp::Add:
-            stream << "  add a0, t0, t1\n";
+            stream << "  add a0, t0, t1" << std::endl;
             break;
         case BinOp::Sub:
-            stream << "  sub a0, t0, t1\n";
+            stream << "  sub a0, t0, t1" << std::endl;
             break;
         case BinOp::Mul:
-            stream << "  mul a0, t0, t1\n";
+            stream << "  mul a0, t0, t1" << std::endl;
             break;
         case BinOp::Div:
-            stream << "  div a0, t0, t1\n";
+            stream << "  div a0, t0, t1" << std::endl;
             break;
         default:
-            stream << "  # Unsupported binary operator\n";
+            throw std::runtime_error("No valid binary operator");
             break;
     }
 }
