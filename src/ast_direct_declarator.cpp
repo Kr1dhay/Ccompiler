@@ -13,4 +13,10 @@ void DirectDeclarator::Print(std::ostream& stream) const
     identifier_->Print(stream);
 }
 
+std::string DirectDeclarator::getName() const
+{
+    return identifier_->getName();
+
+}
+
 } // namespace ast

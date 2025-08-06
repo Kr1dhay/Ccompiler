@@ -30,11 +30,6 @@ namespace ast {
         return -1; // No available register
     }
 
-    // Stack Frame
-
-    bool stackFrame::inFrame(std::string name) {
-        return varBindings.find(name) != varBindings.end();
-    }
 
 
     // Context
@@ -50,7 +45,7 @@ namespace ast {
     void Context::enterScope() {
         stack.emplace_back();
         auto& frame = stack.back();
-        frame.offset = 0; // locals start at offset 0 (we subtract to grow down)
+        frame.offsetTracker = 8; // locals start at offset 8 (we subtract to grow down)
     }
 
     void Context::exitScope() {
@@ -77,5 +72,62 @@ namespace ast {
         return registers.allocate();
     }
 
+    void Context::setCurrentVariableSize(TypeSpecifier type) {
+        switch (type) {
+            case TypeSpecifier::INT:
+                currentVariableSize = 4; // Assuming int is 4 bytes
+                break;
+            case TypeSpecifier::VOID:
+                currentVariableSize = 0; // Void has no size
+                break;
+            case TypeSpecifier::FLOAT:
+                currentVariableSize = 4; // Assuming float is 4 bytes
+                break;
+            case TypeSpecifier::DOUBLE:
+                currentVariableSize = 8; // Assuming double is 8 bytes
+                break;
+        }
+
+    }
+
+    int Context::getCurrentVariableSize() const {
+        return currentVariableSize;
+    }
+
+
+    int Context::addLocalVar(const std::string& name) {
+        if (stack.empty()) {
+            throw std::runtime_error("No active stack frame to add local variable.");
+        }
+        auto& frame = stack.back();
+        if (frame.inFrame(name)) {
+            throw std::runtime_error("Variable already exists in the current scope: " + name);
+        }
+
+        frame.offsetTracker -= currentVariableSize;
+        frame.varBindings[name] = {currentVariableSize, frame.offsetTracker, -1, TypeSpecifier::INT};
+
+        return frame.offsetTracker;
+    }
+
+    int Context::getVariableOffset(const std::string& name) const {
+        if (stack.empty()) {
+            throw std::runtime_error("No active stack frame to get variable offset.");
+        }
+        auto& frame = stack.back();
+        if (!frame.inFrame(name)) {
+            throw std::runtime_error("Variable not found in the current scope: " + name);
+        }
+        return frame.varBindings.at(name).offsetTracker
+        ;
+    }
+
+
+    int Context::getCurrentFrameSize() const {
+        if (stack.empty()) {
+            throw std::runtime_error("No active stack frame to get current frame size.");
+        }
+        return stack.back().offsetTracker;
+    }
 
 }

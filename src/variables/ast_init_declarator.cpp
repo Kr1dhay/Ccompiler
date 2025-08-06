@@ -8,13 +8,20 @@ namespace ast {
 
     void InitDeclarator::EmitRISC(std::ostream &stream, Context &context) const {
         // Emit RISC code for the declarator
-        declarator_->EmitRISC(stream, context);
 
-        // If there is an initializer, emit code for it
-        if (initialiser_) {
-            initialiser_->EmitRISC(stream, context);
-        }
+        std::string varName = declarator_->getName();
+
+        int offset = context.addLocalVar(varName);
+
+        stream << "li a5, "; // Using a5 hardcoded for now till i fix the register file
+        initialiser_->EmitRISC(stream, context);
+
+
+        stream << "sw a5, " << offset << "(fp)" << std::endl;
+
     }
+
+
 
     void InitDeclarator::Print(std::ostream &stream) const {
         stream << "InitDeclarator(";

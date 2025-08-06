@@ -4,12 +4,12 @@ namespace ast {
 
 void ReturnStatement::EmitRISC(std::ostream& stream, Context& context) const
 {
+
     if (expression_ != nullptr)
     {
         expression_->EmitRISC(stream, context);
     }
 
-    stream << "j " << context.getCurrentEndLabel() << std::endl;
 
 }
 

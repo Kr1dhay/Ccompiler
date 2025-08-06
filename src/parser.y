@@ -52,8 +52,8 @@
 %type <node> conditional_expression assignment_expression expression constant_expression
 %type <node> declaration
 %type <node> declarator direct_declarator init_declarator
-%type <node> statement
-%type <node_list> statement_list declaration_list
+%type <node> statement initializer
+%type <node_list> statement_list declaration_list init_declarator_list
 %type <type_specifier> type_specifier declaration_specifiers
 
 
@@ -156,13 +156,13 @@ conditional_expression
 /*--- NEW: assignment_expression to support '=' ---*/
 assignment_expression
   : conditional_expression         { $$ = $1; }
-  | unary_expression assignment_operator assignment_expression {
-		$$ = new AssignmentExpression(NodePtr($1), NodePtr($2), NodePtr($3));
-	} /* NEW */
-;
+//   | unary_expression assignment_operator assignment_expression {
+// 		$$ = new AssignmentExpression(NodePtr($1), NodePtr($2), NodePtr($3));
+// 	} /* NEW */
+// ;
 
-assignment_operator
-	: '='
+// assignment_operator
+// 	: '='
 	// | MUL_ASSIGN
 	// | DIV_ASSIGN
 	// | MOD_ASSIGN

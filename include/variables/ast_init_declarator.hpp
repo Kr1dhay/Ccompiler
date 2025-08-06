@@ -15,14 +15,10 @@ namespace ast {
     public:
 
         InitDeclarator(NodePtr declarator, NodePtr initialiser)
-            : declarator_(std::move(declarator)), initializer_(std::move(initialiser)) {}
+            : declarator_(std::move(declarator)), initialiser_(std::move(initialiser)) {}
 
-        virtual void EmitRISC(std::ostream &stream, Context &context) const override;
-        virtual void Print(std::ostream &stream) const override;
+        void EmitRISC(std::ostream &stream, Context &context) const override;
+        void Print(std::ostream &stream) const override;
 
-
-
-
-
-    }
+    };
 }

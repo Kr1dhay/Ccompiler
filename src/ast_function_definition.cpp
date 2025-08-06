@@ -2,19 +2,17 @@
 
 namespace ast {
 
-void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
-{
     // Emit assembler directives.
     // TODO: these are just examples ones, make sure you understand
     // the concept of directives and correct them.
     // stream << ".globl f" << std::endl;
+void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
+{
 
-    stream << ".globl ";
-    declarator_->EmitRISC(stream, context);
-    stream << std::endl;
+    std::string functionName = declarator_->getName();
 
-    declarator_->EmitRISC(stream, context);
-    stream << ":" << std::endl;
+    stream << ".globl " << functionName << std::endl;
+    stream << functionName << ":" << std::endl;
 
     // === Prologue ===
     stream << "addi sp, sp, -8" << std::endl;      // 4 for ra + 4 for s0
@@ -26,8 +24,6 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
     context.enterScope(); // Updates internal state
 
 
-    std::string returnLabel = context.makeLabel("epilogue");
-    context.setCurrentEndLabel(returnLabel);
     if (compound_statement_ != nullptr)
     {
         compound_statement_->EmitRISC(stream, context);
@@ -36,14 +32,9 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
 
     // === Epilogue ===
 
-    // int dynamicSize = -context.getCurrentFrameOffset();  // Total size used for locals
-    // int totalFrameSize = 8 + dynamicSize;
-    int totalFrameSize = 8; // 4 for ra + 4 for s0, no locals in this example
-
-    stream << returnLabel << ":" << std::endl;
     stream << "lw ra, 4(sp)" << std::endl;
     stream << "lw s0, 0(sp)" << std::endl;
-    stream << "addi sp, sp, " << totalFrameSize << std::endl;
+    stream << "addi sp, sp, " << context.getCurrentFrameSize() << std::endl;
     stream << "jr ra" << std::endl;
 
     context.exitScope();  // Now it's safe to pop the frame

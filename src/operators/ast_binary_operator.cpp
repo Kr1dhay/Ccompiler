@@ -9,11 +9,12 @@ namespace ast {
 void BinaryOperator::EmitRISC(std::ostream &stream, Context &context) const
 {
     // Evaluate left and right subexpressions
+
     left_->EmitRISC(stream, context);
-    stream << "  mv t0, a0" << std::endl;  // Save left result
+    stream << "mv t0, a0" << std::endl;  // Save left result
 
     right_->EmitRISC(stream, context);
-    stream << "  mv t1, a0" << std::endl;  // Save right result
+    stream << "mv t1, a0" << std::endl;  // Save right result
 
     switch (op_) {
         case BinOp::Add:
