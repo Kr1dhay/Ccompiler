@@ -53,7 +53,7 @@
 %type <node> declaration
 %type <node> declarator direct_declarator init_declarator
 %type <node> statement initializer
-%type <node_list> statement_list declaration_list init_declarator_list
+%type <node> statement_list declaration_list init_declarator_list
 %type <type_specifier> type_specifier declaration_specifiers
 
 
@@ -85,6 +85,10 @@ primary_expression
 	: INT_CONSTANT {
 		$$ = new IntConstant($1);
 	}
+    | IDENTIFIER {
+        $$ = new Identifier(std::move(*$1));
+        delete $1;
+    }
 	;
 
 postfix_expression
@@ -188,8 +192,7 @@ constant_expression
 
 /*--- NEW: declaration and init-declarator rules ---*/
 declaration
-  : declaration_specifiers ';'                                                   { $$ = new Declaration(NodePtr($1), {}); }
-  | declaration_specifiers init_declarator_list ';' { $$ = new Declaration(NodePtr($1), *$2); delete $2; } /* NEW */
+  : declaration_specifiers init_declarator_list ';' { $$ = new Declaration($1, NodePtr($2)); }
 ;
 
 declaration_specifiers
@@ -214,8 +217,7 @@ type_specifier
 
 init_declarator_list
   : init_declarator { $$ = new NodeList(NodePtr($1)); } /* NEW */
-//   | init_declarator_list ',' init_declarator
-//       { $1->PushBack(NodePtr($3)); $$ = $1; }
+  | init_declarator_list ',' init_declarator { static_cast<NodeList*>($1)->PushBack(NodePtr($3)); $$ = $1; }
 ;
 
 init_declarator
@@ -237,20 +239,17 @@ initializer
 statement
   : compound_statement                                                             { $$ = $1; }
   | jump_statement                                                                 { $$ = $1; }
-//   | labeled_statement                                                              { $$ = $1; }
-//   | expression_statement                                                           { $$ = $1; }
-//   | declaration                                                                    { $$ = new DeclarationStatement(NodePtr($1)); } /* NEW */
-//   | selection_statement                                                            { $$ = $1; }
-//   | iteration_statement                                                            { $$ = $1; }
 ;
 
 compound_statement
-  : '{' statement_list '}'                                                         { $$ = $2; }
+  : '{' statement_list '}' { $$ = $2; }
+  | '{' declaration_list '}' { $$ = $2; }
+  | '{' declaration_list statement_list '}'  {auto list = new NodeList(NodePtr($2)); list->PushBack(NodePtr($3)); $$ = list; }
 ;
 
 declaration_list
   : declaration                                                                    { $$ = new NodeList(NodePtr($1)); }
-  | declaration_list declaration                                                   { $1->PushBack(NodePtr($2)); $$ = $1; }
+  | declaration_list declaration                                                   { static_cast<NodeList*>($1)->PushBack(NodePtr($2)); $$ = $1; }
 ;
 
 
@@ -270,7 +269,7 @@ direct_declarator
 
 statement_list
   : statement                                                                      { $$ = new NodeList(NodePtr($1)); }
-  | statement_list statement                                                        { $1->PushBack(NodePtr($2)); $$ = $1; }
+  | statement_list statement                                                        { static_cast<NodeList*>($1)->PushBack(NodePtr($2)); $$ = $1; }
 ;
 
 

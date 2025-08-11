@@ -32,8 +32,8 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
 
     // === Epilogue ===
 
-    stream << "lw ra, 4(sp)" << std::endl;
-    stream << "lw s0, 0(sp)" << std::endl;
+    stream << "lw ra, -4(s0)" << std::endl;
+    stream << "lw s0, -8(s0)" << std::endl;
     stream << "addi sp, sp, " << context.getCurrentFrameSize() << std::endl;
     stream << "jr ra" << std::endl;
 

@@ -2,10 +2,10 @@
 
 namespace ast {
 
-void Identifier::EmitRISC(std::ostream& stream, Context&) const
+void Identifier::EmitRISC(std::ostream& stream, Context& context) const
 {
-    stream << identifier_ << std::endl; // Emit the identifier as a RISC instruction
-    // This is a placeholder; actual implementation may vary based on context
+    int offset = context.getVariableOffset(identifier_);
+    stream << "lw a0, " << offset << "(fp)" << std::endl;
 }
 
 void Identifier::Print(std::ostream& stream) const

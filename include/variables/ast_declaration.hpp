@@ -9,12 +9,17 @@ namespace ast {
 
 class Declaration : public Node {
 private:
-    TypeSpecifier type;                     // e.g., INT, FLOAT, etc.
-    std::vector<NodePtr> initDeclarators;   // Each is an InitDeclarator
+    TypeSpecifier type_specifier_;
+    NodePtr init_declarators_;
 
 public:
-    Declaration(TypeSpecifier t, std::vector<NodePtr>&& decls)
-        : type(t), initDeclarators(std::move(decls)) {}
+    // Change constructor to take TypeSpecifier directly
+    Declaration(TypeSpecifier type_spec, NodePtr declarators)
+        : type_specifier_(type_spec), init_declarators_(std::move(declarators)) {}
+
+    // Alternative constructor for empty declarator list
+    Declaration(TypeSpecifier type_spec)
+        : type_specifier_(type_spec), init_declarators_() {}
 
     virtual void EmitRISC(std::ostream& stream, Context& context) const override;
     virtual void Print(std::ostream& stream) const override;

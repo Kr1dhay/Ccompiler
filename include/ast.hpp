@@ -16,5 +16,6 @@
 #include "ast/ast_root.hpp"
 #include "variables/ast_init_declarator.hpp"
 #include "variables/ast_assignment_expression.hpp"
+#include "variables/ast_declaration.hpp"
 
 ast::NodePtr ParseAST(std::string file_name);

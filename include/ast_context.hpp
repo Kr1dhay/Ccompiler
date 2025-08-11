@@ -47,7 +47,7 @@ struct RegisterFile
 struct variable
 {
     int size; // bytes
-    int offsetTracker;        // fp-relative offsetTracker
+    int offset;        // fp-relative offset
     int reg;           // register allocated, -1 if in memory
     TypeSpecifier type;
 };
@@ -70,7 +70,7 @@ struct function
 struct stackFrame
 {
     std::map<std::string, variable> varBindings;
-    int offsetTracker = -8;
+    int frameSize;
     std::string startLabel; // for continue/break
     std::string endLabel;
     // Specifier returnType; // comment out for now
@@ -113,7 +113,7 @@ class Context
         int allocate();
         void setCurrentVariableSize(TypeSpecifier type);
         int getCurrentVariableSize() const;
-        int addLocalVar(const std::string& name);
+        int addLocalVar(const std::string& name, std::ostream &stream);
         int getVarOffset(const std::string& name) const;
         int getVariableOffset(const std::string& name) const;
         int getCurrentFrameSize() const;

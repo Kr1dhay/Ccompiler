@@ -35,6 +35,7 @@ public:
     void PushBack(NodePtr item);
     virtual void EmitRISC(std::ostream& stream, Context& context) const;
     virtual void Print(std::ostream& stream) const;
+    int getSize() const;
 };
 
 } // namespace ast

@@ -11,13 +11,12 @@ namespace ast {
 
         std::string varName = declarator_->getName();
 
-        int offset = context.addLocalVar(varName);
+        int offset = context.addLocalVar(varName, stream);
 
-        stream << "li a5, "; // Using a5 hardcoded for now till i fix the register file
         initialiser_->EmitRISC(stream, context);
 
 
-        stream << "sw a5, " << offset << "(fp)" << std::endl;
+        stream << "sw a0, " << offset << "(fp)" << std::endl;
 
     }
 

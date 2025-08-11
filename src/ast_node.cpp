@@ -10,6 +10,7 @@ std::string Node::getName() const
 }
 
 
+
 void NodeList::PushBack(NodePtr item)
 {
     nodes_.push_back(std::move(item));
@@ -39,6 +40,9 @@ void NodeList::Print(std::ostream& stream) const
     }
 }
 
-
-
+int NodeList::getSize() const
+{
+    return nodes_.size();
 }
+
+} // namespace ast
