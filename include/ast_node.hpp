@@ -14,6 +14,8 @@ public:
     virtual ~Node() {}
     virtual void EmitRISC(std::ostream& stream, Context& context) const = 0;
     virtual void Print(std::ostream& stream) const = 0;
+    virtual std::string getName() const;
+
 };
 
 // If you don't feel comfortable using std::unique_ptr, you can switch NodePtr to be defined
@@ -31,8 +33,9 @@ public:
     NodeList(NodePtr first_node) { nodes_.push_back(std::move(first_node)); }
 
     void PushBack(NodePtr item);
-    virtual void EmitRISC(std::ostream& stream, Context& context) const override;
-    virtual void Print(std::ostream& stream) const override;
+    virtual void EmitRISC(std::ostream& stream, Context& context) const;
+    virtual void Print(std::ostream& stream) const;
+    int getSize() const;
 };
 
 } // namespace ast

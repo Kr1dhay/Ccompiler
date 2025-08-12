@@ -12,6 +12,9 @@
 
 #pragma once
 
+#include "ast_type_specifier.hpp"  // Include the unified type specifier
+
+
 namespace ast {
 
 
@@ -40,19 +43,13 @@ struct RegisterFile
     // int allocateFloat();
 };
 
-// === Type Specifier ===
-// struct Specifier {
-//     enum Type { _int, _void, _float, _double };
-// };
-
-
 // === Variable ===
 struct variable
 {
-    unsigned int size; // bytes
+    int size; // bytes
     int offset;        // fp-relative offset
     int reg;           // register allocated, -1 if in memory
-    // Specifier type = Specifier::_int;
+    TypeSpecifier type;
 };
 
 // === Function ===
@@ -73,13 +70,16 @@ struct function
 struct stackFrame
 {
     std::map<std::string, variable> varBindings;
-    unsigned int offset = 0;
+    int frameSize;
     std::string startLabel; // for continue/break
     std::string endLabel;
     // Specifier returnType; // comment out for now
 
 
-    bool inFrame(std::string name);
+    bool inFrame(std::string name) const
+    {
+        return varBindings.find(name) != varBindings.end();
+    }
 };
 
 std::ostream &operator<<(std::ostream &dst, stackFrame frame);
@@ -94,6 +94,7 @@ class Context
 
         std::map<std::string, /*Specifier*/int> globals; // only int for now
         std::map<std::string, function> functions;
+        int currentVariableSize;
         // std::map<std::string, enumeration> enums;
 
         int labelCounter = 0;
@@ -107,15 +108,15 @@ class Context
 
         std::string getCurrentEndLabel() const;
 
-        // bool isEnum(const std::string &name) {
-        //     return enums.find(name) != enums.end();
-        // }
-
         void enterScope();
-        // void exitScope(std::ostream &dst);
         void exitScope();
-
         int allocate();
+        void setCurrentVariableSize(TypeSpecifier type);
+        int getCurrentVariableSize() const;
+        int addLocalVar(const std::string& name, std::ostream &stream);
+        int getVarOffset(const std::string& name) const;
+        int getVariableOffset(const std::string& name) const;
+        int getCurrentFrameSize() const;
 };
 
 // What could go inside Context now:
