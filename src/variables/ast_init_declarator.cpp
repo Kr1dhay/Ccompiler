@@ -16,7 +16,14 @@ namespace ast {
         initialiser_->EmitRISC(stream, context);
 
 
-        stream << "sw a0, " << offset << "(fp)" << std::endl;
+        const variable& var = context.getVariable(varName);
+        if (var.reg != -1) {
+            // Store directly in its register
+            stream << "mv x" << var.reg << ", a0" << std::endl;
+        } else {
+            // Store into memory
+            stream << "sw a0, " << offset << "(fp)" << std::endl;
+        }
 
     }
 

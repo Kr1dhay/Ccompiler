@@ -4,8 +4,12 @@ namespace ast {
 
 void Identifier::EmitRISC(std::ostream& stream, Context& context) const
 {
-    int offset = context.getVariableOffset(identifier_);
-    stream << "lw a0, " << offset << "(fp)" << std::endl;
+    const variable& var = context.getVariable(identifier_);
+    if (var.reg != -1) {
+        stream << "mv a0, x" << var.reg << std::endl;
+    } else {
+        stream << "lw a0, " << var.offset << "(fp)" << std::endl;
+    }
 }
 
 void Identifier::Print(std::ostream& stream) const

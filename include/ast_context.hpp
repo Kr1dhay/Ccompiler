@@ -31,7 +31,7 @@ struct RegisterFile
       0, 0, 0, // x5-x7 = t0-t2 temporaries (caller)
       1, // x8 = s0/fp Saved register/frame pointer (callee)
       1, //x9 = s1 saved register (callee)
-      0, 0, // x10-x11 = a0-a1 Function arguments/return values (caller)
+      1, 0, // x10-x11 = a0-a1 Function arguments/return values (caller)
       0, 0, 0, 0, 0, 0, // x12–17 = a2–7 Function arguments (caller)
       1, 1, 1, 1, 1, 1, 1, 1, 1, 1,// x18–27 = s2–11 Saved registers (callee)
       0, 0, 0, 0, // x28–31 = t3–6 Temporaries (caller)
@@ -110,13 +110,17 @@ class Context
 
         void enterScope();
         void exitScope();
-        int allocate();
         void setCurrentVariableSize(TypeSpecifier type);
         int getCurrentVariableSize() const;
         int addLocalVar(const std::string& name, std::ostream &stream);
         int getVarOffset(const std::string& name) const;
         int getVariableOffset(const std::string& name) const;
         int getCurrentFrameSize() const;
+        const variable& getVariable(const std::string& name) const;
+        int getVariableRegister(const std::string& name) const;
+        int allocateRegister(std::ostream &stream);
+        void freeRegister(int reg);
+
 };
 
 // What could go inside Context now:

@@ -15,13 +15,8 @@ namespace ast {
                 return i;
             }
         }
-        for (int i = 9; i <= 12; ++i) { // a0-a3
-            if (usedRegs[i] == 0) {
-                useReg(i);
-                return i;
-            }
-        }
-        for (int i = 25; i <= 27; ++i) { // t4-t6
+
+        for (int i = 28; i <= 31; ++i) { // t3-t6
             if (usedRegs[i] == 0) {
                 useReg(i);
                 return i;
@@ -68,9 +63,6 @@ namespace ast {
         return stack.back().endLabel;
     }
 
-    int Context::allocate() {
-        return registers.allocate();
-    }
 
     void Context::setCurrentVariableSize(TypeSpecifier type) {
         switch (type) {
@@ -104,16 +96,32 @@ namespace ast {
             throw std::runtime_error("Variable already exists in the current scope: " + name);
         }
 
-        stream << "addi sp, sp, -" << currentVariableSize << std::endl;
+        int reg = registers.allocate();
 
+        stream << "addi sp, sp, -" << currentVariableSize << std::endl;
 
         frame.frameSize += currentVariableSize;
         int offsetFromFp = -frame.frameSize; // locals go negative from fp
-        frame.varBindings[name] = { currentVariableSize, offsetFromFp, -1, TypeSpecifier::INT };
+        frame.varBindings[name] = { currentVariableSize, offsetFromFp, reg, TypeSpecifier::INT };
 
         return offsetFromFp;
 
     }
+
+    const variable& Context::getVariable(const std::string& name) const {
+    if (stack.empty()) {
+        throw std::runtime_error("No active stack frame to get variable: " + name);
+    }
+
+    const auto& frame = stack.back();
+    auto it = frame.varBindings.find(name);
+    if (it == frame.varBindings.end()) {
+        throw std::runtime_error("Variable not found in current scope: " + name);
+    }
+
+    return it->second; // returns a const reference to the variable struct
+}
+
 
     int Context::getVariableOffset(const std::string& name) const {
         if (stack.empty()) {
@@ -132,6 +140,29 @@ namespace ast {
             throw std::runtime_error("No active stack frame to get current frame size.");
         }
         return stack.back().frameSize;
+    }
+
+    int Context::allocateRegister(std::ostream &stream) {
+        int reg = registers.allocate();
+        if (reg != -1) return reg;
+
+
+        // Spill the first variable we find that has a register
+        for (auto &pair : stack.back().varBindings) {
+            variable &var = pair.second;
+            if (var.reg != -1) {
+                stream << "sw x" << var.reg << ", " << var.offset << std::endl;
+                registers.freeReg(var.reg);
+                var.reg = -1;
+                break;
+            }
+        }
+
+        return registers.allocate(); // reallocate now that one is free
+    }
+
+    void Context::freeRegister(int reg) {
+        registers.freeReg(reg);
     }
 
 }
