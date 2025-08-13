@@ -8,7 +8,19 @@ enum class BinOp {
     Add,
     Sub,
     Mul,
-    Div
+    Div,
+    Mod,
+    Shl,
+    Shr,
+    Lt,
+    Gt,
+    Leq,
+    Geq,
+    Eq,
+    Neq,
+    BitAnd,
+    BitXor,
+    BinOr,
 };
 
 class BinaryOperator : public Node{
@@ -18,7 +30,10 @@ class BinaryOperator : public Node{
         NodePtr right_;
 
     public:
-        BinaryOperator(BinOp op_, NodePtr left, NodePtr right);
+
+         BinaryOperator(BinOp op, NodePtr left, NodePtr right)
+        : op_(op), left_(std::move(left)), right_(std::move(right)) {}
+
 
     virtual void EmitRISC(std::ostream &stream, Context &context) const override;
     virtual void Print(std::ostream &stream) const override;

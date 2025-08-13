@@ -113,6 +113,8 @@ multiplicative_expression
       { $$ = new BinaryOperator(BinOp::Mul, NodePtr($1), NodePtr($3)); }
   | multiplicative_expression '/' cast_expression
       { $$ = new BinaryOperator(BinOp::Div, NodePtr($1), NodePtr($3)); }
+  | multiplicative_expression '%' cast_expression
+      { $$ = new BinaryOperator(BinOp::Mod, NodePtr($1), NodePtr($3)); }
 ;
 
 additive_expression
@@ -124,39 +126,55 @@ additive_expression
 ;
 
 shift_expression
-  : additive_expression
-  ;
+	: additive_expression { $$ = $1; }
+	| shift_expression LEFT_OP additive_expression { $$ = new BinaryOperator(BinOp::Shl, NodePtr($1), NodePtr($3)); }
+	| shift_expression RIGHT_OP additive_expression { $$ = new BinaryOperator(BinOp::Shr, NodePtr($1), NodePtr($3)); }
+	;
 
 relational_expression
-  : shift_expression
-  ;
+	: shift_expression { $$ = $1; }
+	| relational_expression '<' shift_expression {$$ = new BinaryOperator(BinOp::Lt, NodePtr($1), NodePtr($3));}
+	| relational_expression '>' shift_expression {$$ = new BinaryOperator(BinOp::Gt, NodePtr($1), NodePtr($3));}
+	| relational_expression LE_OP shift_expression {$$ = new BinaryOperator(BinOp::Leq, NodePtr($1), NodePtr($3));}
+	| relational_expression GE_OP shift_expression {$$ = new BinaryOperator(BinOp::Geq, NodePtr($1), NodePtr($3));}
+	;
+
 
 equality_expression
-  : relational_expression
-  ;
+	: relational_expression { $$ = $1; }
+	| equality_expression EQ_OP relational_expression { $$ = new BinaryOperator(BinOp::Eq, NodePtr($1), NodePtr($3)); }
+	| equality_expression NE_OP relational_expression { $$ = new BinaryOperator(BinOp::Neq, NodePtr($1), NodePtr($3)); }
+	;
 
 and_expression
-  : equality_expression
-  ;
+	: equality_expression { $$ = $1; }
+	| and_expression '&' equality_expression { $$ = new BinaryOperator(BinOp::BitAnd, NodePtr($1), NodePtr($3)); }
+	;
+
 
 exclusive_or_expression
   : and_expression
+  | exclusive_or_expression '^' and_expression { $$ = new BinaryOperator(BinOp::BinXor, NodePtr($1), NodePtr($3)); }
   ;
 
 inclusive_or_expression
   : exclusive_or_expression
+  | inclusive_or_expression '|' exclusive_or_expression { $$ = new BinaryOperator(BinOp::BinOr, NodePtr($1), NodePtr($3)); }
   ;
 
 logical_and_expression
   : inclusive_or_expression
+//   | logical_and_expression AND_OP inclusive_or_expression { $$ = new LogicOperator(LogicOp::LogicAnd, NodePtr($1), NodePtr($3)); }
   ;
 
 logical_or_expression
   : logical_and_expression
+//   | logical_or_expression OR_OP logical_and_expression { $$ = new LogicOperator(LogicOp::LogicOr, NodePtr($1), NodePtr($3)); }
   ;
 
 conditional_expression
   : logical_or_expression          { $$ = $1; }
+//   | logical_or_expression '?' expression ':' conditional_expression
   ;
 
 
@@ -271,12 +289,24 @@ direct_declarator
 	| direct_declarator '(' ')' {
 		$$ = new DirectDeclarator(NodePtr($1));
 	}
+    // | direct_declarator '(' parameter_list ')' { $$ = new DirectDeclarator(NodePtr($1), NodePtr($3)); }
 	;
+
+// parameter_list
+// 	: parameter_declaration { $$ = new NodeList(NodePtr($1)); }
+// 	| parameter_list ',' parameter_declaration { static_cast<NodeList*>($1)->PushBack(NodePtr($3)); $$ = $1; }
+// 	;
+
+// parameter_declaration
+// 	: declaration_specifiers declarator {$$ = new ParameterDeclaration(NodePtr($1), NodePtr($2));}
+// 	| declaration_specifiers {$$ = new ParameterDeclaration(NodePtr($1));}
+// 	;
 
 statement_list
   : statement                                                                      { $$ = new NodeList(NodePtr($1)); }
   | statement_list statement                                                        { static_cast<NodeList*>($1)->PushBack(NodePtr($2)); $$ = $1; }
 ;
+
 
 
 
