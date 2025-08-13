@@ -19,7 +19,7 @@ public:
 
     // Alternative constructor for empty declarator list
     Declaration(TypeSpecifier type_spec)
-        : type_specifier_(type_spec), init_declarators_() {}
+        : type_specifier_(type_spec), init_declarators_(nullptr) {}
 
     virtual void EmitRISC(std::ostream& stream, Context& context) const override;
     virtual void Print(std::ostream& stream) const override;
