@@ -17,6 +17,9 @@ namespace ast {
         InitDeclarator(NodePtr declarator, NodePtr initialiser)
             : declarator_(std::move(declarator)), initialiser_(std::move(initialiser)) {}
 
+        InitDeclarator(NodePtr declarator)
+            : declarator_(std::move(declarator)), initialiser_(nullptr) {}
+
         void EmitRISC(std::ostream &stream, Context &context) const override;
         void Print(std::ostream &stream) const override;
 

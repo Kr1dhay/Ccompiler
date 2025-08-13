@@ -24,6 +24,7 @@
   double       	number_float;
   std::string* 	string;
   TypeSpecifier	type_specifier;
+  AssignmentOp	assignment_op;
   yytokentype  	token;
 }
 
@@ -31,6 +32,9 @@
 %token <number_int>INT_CONSTANT     /* int          */
 %token <number_float>FLOAT_CONSTANT /* double       */
 %token <string>    STRING_LITERAL   /* std::string* */
+
+%type <assignment_op> assignment_operator
+
 
 
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP AND_OP OR_OP
@@ -52,7 +56,7 @@
 %type <node> conditional_expression assignment_expression expression constant_expression
 %type <node> declaration
 %type <node> declarator direct_declarator init_declarator
-%type <node> statement initializer
+%type <node> statement initializer expression_statement
 %type <node> statement_list declaration_list init_declarator_list
 %type <type_specifier> type_specifier declaration_specifiers
 
@@ -160,24 +164,24 @@ conditional_expression
 /*--- NEW: assignment_expression to support '=' ---*/
 assignment_expression
   : conditional_expression         { $$ = $1; }
-//   | unary_expression assignment_operator assignment_expression {
-// 		$$ = new AssignmentExpression(NodePtr($1), NodePtr($2), NodePtr($3));
-// 	} /* NEW */
-// ;
+  | unary_expression assignment_operator assignment_expression {
+		$$ = new AssignmentExpression(NodePtr($1), $2, NodePtr($3));
+	}
+;
 
-// assignment_operator
-// 	: '='
-	// | MUL_ASSIGN
-	// | DIV_ASSIGN
-	// | MOD_ASSIGN
-	// | ADD_ASSIGN
-	// | SUB_ASSIGN
-	// | LEFT_ASSIGN
-	// | RIGHT_ASSIGN
-	// | AND_ASSIGN
-	// | XOR_ASSIGN
-	// | OR_ASSIGN
-	;
+assignment_operator
+  : '='          { $$ = AssignmentOp::Assign; }
+  // | MUL_ASSIGN   { $$ = AssignmentOp::MulAssign; }
+  // | DIV_ASSIGN   { $$ = AssignmentOp::DivAssign; }
+  // | MOD_ASSIGN   { $$ = AssignmentOp::ModAssign; }
+  // | ADD_ASSIGN   { $$ = AssignmentOp::AddAssign; }
+  // | SUB_ASSIGN   { $$ = AssignmentOp::SubAssign; }
+  // | LEFT_ASSIGN  { $$ = AssignmentOp::ShlAssign; }
+  // | RIGHT_ASSIGN { $$ = AssignmentOp::ShrAssign; }
+  // | AND_ASSIGN   { $$ = AssignmentOp::AndAssign; }
+  // | XOR_ASSIGN   { $$ = AssignmentOp::XorAssign; }
+  // | OR_ASSIGN    { $$ = AssignmentOp::OrAssign; }
+  ;
 
 
 expression
@@ -192,7 +196,8 @@ constant_expression
 
 /*--- NEW: declaration and init-declarator rules ---*/
 declaration
-  : declaration_specifiers init_declarator_list ';' { $$ = new Declaration($1, NodePtr($2)); }
+  : declaration_specifiers ';'      { $$ = new Declaration($1); }
+  | declaration_specifiers init_declarator_list ';' { $$ = new Declaration($1, NodePtr($2)); }
 ;
 
 declaration_specifiers
@@ -216,29 +221,30 @@ type_specifier
 
 
 init_declarator_list
-  : init_declarator { $$ = new NodeList(NodePtr($1)); } /* NEW */
+  : init_declarator { $$ = new NodeList(NodePtr($1)); }
   | init_declarator_list ',' init_declarator { static_cast<NodeList*>($1)->PushBack(NodePtr($3)); $$ = $1; }
 ;
 
 init_declarator
-  : declarator { $$ = $1; }
-  | declarator '=' initializer { $$ = new InitDeclarator(NodePtr($1), NodePtr($3)); } /* NEW */
+  : declarator { $$ = new InitDeclarator(NodePtr($1)); }
+  | declarator '=' initializer { $$ = new InitDeclarator(NodePtr($1), NodePtr($3)); }
 ;
 
 initializer
-  : assignment_expression  {$$ = $1;} /* NEW */
+  : assignment_expression  {$$ = $1;}
 //   | '{' initializer_list '}'                                                       { /* for aggregates later */ }
 // ;
 
 /*--- Statements, including declarations and expressions ---*/
-// expression_statement
-//   : ';'                                                                            { $$ = new EmptyStatement(); } /* NEW */
-//   | expression ';'                                                                 { $$ = new ExpressionStatement(NodePtr($1)); } /* NEW */
-// ;
+expression_statement
+  : expression ';'{ $$ = $1; }
+//   | ';'  { $$ = new EmptyStatement(); }
+;
 
 statement
   : compound_statement                                                             { $$ = $1; }
   | jump_statement                                                                 { $$ = $1; }
+  | expression_statement                                                            { $$ = $1; }
 ;
 
 compound_statement
