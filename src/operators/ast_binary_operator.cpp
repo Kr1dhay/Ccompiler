@@ -2,9 +2,6 @@
 
 namespace ast {
 
- BinaryOperator::BinaryOperator(BinOp op, NodePtr left, NodePtr right)
-        : op_(std::move(op)), left_(std::move(left)), right_(std::move(right)) {}
-
 
 void BinaryOperator::EmitRISC(std::ostream &stream, Context &context) const
 {
@@ -27,11 +24,52 @@ void BinaryOperator::EmitRISC(std::ostream &stream, Context &context) const
             stream << "  sub a0, x" << leftReg << ", x" << rightReg << std::endl;
             break;
         case BinOp::Mul:
-            stream << "  mul a0, x" << leftReg << ", x" << rightReg << std::endl;
+            stream << "mul a0, x" << leftReg << ", x" << rightReg << std::endl;
             break;
         case BinOp::Div:
-            stream << "  div a0, x" << leftReg << ", x" << rightReg << std::endl;
+            stream << "div a0, x" << leftReg << ", x" << rightReg << std::endl;
             break;
+        case BinOp::Mod:
+            stream << "rem a0, x" << leftReg << ", x" << rightReg << std::endl;
+            break;
+        case BinOp::Shr:
+            stream << "sra a0, x" << leftReg << ", x" << rightReg << std::endl;
+            break;
+        case BinOp::Shl:
+            stream << "sll a0, x" << leftReg << ", x" << rightReg << std::endl;
+            break;
+        case BinOp::Lt:
+            stream << "slt a0, x" << leftReg << ", x" << rightReg << std::endl;
+            break;
+        case BinOp::Gt:
+            stream << "slt a0, x" << rightReg << ", x" << leftReg << std::endl;
+            break;
+        case BinOp::Leq:
+                stream << "slt a0, x" << rightReg << ", x" << leftReg << std::endl;
+                stream << "xori a0, a0, 1" << std::endl;
+                break;
+        case BinOp::Geq:
+            stream << "slt a0, x" << leftReg << ", x" << rightReg << std::endl;
+            stream << "xori a0, a0, 1" << std::endl;
+            break;
+        case BinOp::Eq:
+            stream << "  xor  a0, x" << leftReg << ", x" << rightReg << std::endl;
+            stream << "  sltiu a0, a0, 1" << std::endl;
+            break;
+        case BinOp::Neq:
+            stream << "  xor  a0, x" << leftReg << ", x" << rightReg << std::endl;
+            stream << "  sltiu a0, a0, a0" << std::endl;
+            break;
+        case BinOp::BitAnd:
+            stream << "  and  a0, x" << leftReg << ", x" << rightReg << std::endl;
+            break;
+        case BinOp::BitXor:
+            stream << "  xor  a0, x" << leftReg << ", x" << rightReg << std::endl;
+            break;
+        case BinOp::BitOr:
+            stream << "  or   a0, x" << leftReg << ", x" << rightReg << std::endl;
+            break;
+
         default:
             throw std::runtime_error("No valid binary operator");
             break;
@@ -53,6 +91,18 @@ void BinaryOperator::Print(std::ostream &stream) const
         case BinOp::Sub: stream << "-"; break;
         case BinOp::Mul: stream << "*"; break;
         case BinOp::Div: stream << "/"; break;
+        case BinOp::Mod: stream << "%"; break;
+        case BinOp::Lt: stream << "<"; break;
+        case BinOp::Gt: stream << ">"; break;
+        case BinOp::Leq: stream << "<="; break;
+        case BinOp::Geq: stream << ">="; break;
+        case BinOp::Shl: stream << "<<"; break;
+        case BinOp::Shr: stream << ">>"; break;
+        case BinOp::Eq: stream << "=="; break;
+        case BinOp::Neq: stream << "!="; break;
+        case BinOp::BitAnd: stream << "&"; break;
+        case BinOp::BitXor: stream << "^"; break;
+        case BinOp::BitOr: stream << "|"; break;
     }
 
     stream << " ";
