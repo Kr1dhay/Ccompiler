@@ -1,4 +1,4 @@
 int f()
 {
-    return 10 >= 1;
+    return 10 && 1;
 }
