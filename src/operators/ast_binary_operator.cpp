@@ -66,7 +66,7 @@ void BinaryOperator::EmitRISC(std::ostream &stream, Context &context) const
         case BinOp::BitXor:
             stream << "  xor  a0, x" << leftReg << ", x" << rightReg << std::endl;
             break;
-        case BinOp::BinOr:
+        case BinOp::BitOr:
             stream << "  or   a0, x" << leftReg << ", x" << rightReg << std::endl;
             break;
 
@@ -102,7 +102,7 @@ void BinaryOperator::Print(std::ostream &stream) const
         case BinOp::Neq: stream << "!="; break;
         case BinOp::BitAnd: stream << "&"; break;
         case BinOp::BitXor: stream << "^"; break;
-        case BinOp::BinOr: stream << "|"; break;
+        case BinOp::BitOr: stream << "|"; break;
     }
 
     stream << " ";

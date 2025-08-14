@@ -20,7 +20,7 @@ enum class BinOp {
     Neq,
     BitAnd,
     BitXor,
-    BinOr,
+    BitOr,
 };
 
 class BinaryOperator : public Node{
