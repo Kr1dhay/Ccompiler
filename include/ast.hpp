@@ -21,5 +21,6 @@
 #include "ast_parameter_declaration.hpp"
 #include "ast_if_statement.hpp"
 #include "ast_if_else_statement.hpp"
+#include "ast_while_statement.hpp"
 
 ast::NodePtr ParseAST(std::string file_name);
