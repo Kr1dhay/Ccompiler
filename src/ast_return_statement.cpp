@@ -9,7 +9,7 @@ void ReturnStatement::EmitRISC(std::ostream& stream, Context& context) const
     {
         expression_->EmitRISC(stream, context);
     }
-
+    stream << "j " << context.getCurrentEndLabel() << std::endl;
 
 }
 
