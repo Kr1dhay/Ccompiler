@@ -1,60 +1,11 @@
-2024/25 Compilers Coursework
+C90 to RISC-V compiler written using C++
 ==============================
 
- **A C compiler**. The source language is pre-processed C90, and the target language is RISC-V assembly. The target environment is Ubuntu 22.04, as described [here](docs/environment_guide.md). See [here](docs/c_compiler.md) for the full set of requirements and more information about the testing environment.
+This project was part of the Instruction Architectures and Compilers module taught at Imperial College London.  My compiler was written using C++ and supports all basic and intermediate features described [here](docs/c_compiler.md)
 
-Repositories
-============
+The source language is pre-processed C90, and the target language is RISC-V assembly. The target environment is Ubuntu 22.04, as described [here](docs/environment_guide.md). See [here](docs/c_compiler.md) for the full set of requirements and more information about the testing environment.
 
-Each group gets a bare private repository. It is up to you if you want to clone the main specification, or to start from scratch.
-
-Submission
-==========
-
-The deadline for submitting your C compiler is **Friday 21 March 2025 at 15:00**. There is no deadline for the project management component; instead, this will be assessed by a short oral viva that will be organised in Summer term.
-
-Submission will be via GitHub (code) and Teams (commit hash), as in the labs.
-
-All submissions will be tested functionally -- there is no expectation for your compiler to *optimise* its input. Moreover, your compiler will only be tested on *valid* inputs, so you do not need to handle faulty inputs in a graceful way.
-
-Changelog
-=========
-
-* New for 2023/2024:
-
-    * Provided guidance to generate coverage information.
-    * Expanded features list and provided a visual test case distribution.
-    * Included useful links to Godbolt, simulator, ISA, ABI, Assembler reference.
-    * Directly linked to ANSI C parser and lexer.
-    * Added a "Getting started" guide and incorporated last year's feedback from Ed.
-    * Changed the 10% of the grade (previously only for time management) to also account for code design to reward thoughtful planning.
-    * Improved the skeleton compiler to be more advanced by integrating lexer and parser to hopefully jump-start progress and avoid unnecessary debugging.
-    * Covered assembler directives in more details by showcasing the meaning behind an example assembly program, because that topic had always caused confusion in the past years.
-    * Added an improved testing script written in Python.
-
-* New for 2022/2023:
-
-    * Target architecture is now RISC-V rather than MIPS, in order to align with the modernised Instruction Architectures half of the module.
-    * Instead of Vagrant, Docker is now used for the testing environment (with optional VS Code support).
-    * Test scripts are now provided to check your compiler against the set of public tests, without having to write this yourself.
-    * The basic compiler framework has been improved to support command line arguments.
-    * GitHub Actions can now perform automated testing of your compiler.
-
-* New for 2021/2022:
-
-    * Various improvements to scripts for running test cases.
-
-* New for 2020/2021:
-
-    * In previous years, students were additionally required to submit a C-to-Python translator, as a "ramping up" task. This extra deliverable has been removed, as the labs provide plenty of "ramping up" practice.
-
-    * We have provided a really basic compiler that simply ignores its input and produces a fixed, valid RISC-V assembly program. This should help you to get started a bit more rapidly.
-
-* New for 2019/2020:
-
-    * In previous years, students were additionally required to submit a set of testcases. This deliverable has been removed; instead, a large collection of testcases has been provided for you, as this was judged to be more useful.
-
-    * In previous years, the compiler component counted for 42.8% of the module; it now counts for 55%. It was felt that this weighting more accurately reflects the effort that students put in to building a working compiler.
+Note for any current Imperial students: please do not directly copy or take from this repository as part of your coursework, or you will be caught for plagarism.
 
 Acknowledgements
 ================
