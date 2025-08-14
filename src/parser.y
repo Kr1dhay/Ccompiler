@@ -320,8 +320,9 @@ selection_statement
 
 iteration_statement
   : WHILE '(' expression ')' statement { $$ = new WhileStatement(NodePtr($3), NodePtr($5)); }
-//   | FOR '(' expression_statement expression_statement ')' statement                 { /* etc. */ }
-// ;
+  | FOR '(' expression_statement expression_statement ')' statement {$$ = new ForStatement(NodePtr($3), NodePtr($4), NodePtr($6));}
+  | FOR '(' expression_statement expression_statement expression ')' statement {$$ = new ForStatement(NodePtr($3), NodePtr($4), NodePtr($5), NodePtr($7));}
+  ;
 
 jump_statement
   : RETURN ';'                                                                     { $$ = new ReturnStatement(nullptr); }
