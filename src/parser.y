@@ -54,7 +54,7 @@
 %type <node> relational_expression equality_expression and_expression
 %type <node> exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <node> conditional_expression assignment_expression expression constant_expression
-%type <node> declaration
+%type <node> declaration selection_statement iteration_statement
 %type <node> declarator direct_declarator init_declarator
 %type <node> statement initializer expression_statement
 %type <node> statement_list declaration_list init_declarator_list
@@ -263,12 +263,15 @@ statement
   : compound_statement                                                             { $$ = $1; }
   | jump_statement                                                                 { $$ = $1; }
   | expression_statement                                                            { $$ = $1; }
+  | selection_statement                                                            { $$ = $1; }
+  | iteration_statement                                                             { $$ = $1; }
 ;
 
 compound_statement
   : '{' statement_list '}' { $$ = $2; }
   | '{' declaration_list '}' { $$ = $2; }
   | '{' declaration_list statement_list '}'  {auto list = new NodeList(NodePtr($2)); list->PushBack(NodePtr($3)); $$ = list; }
+  | '{' '}' { $$ = new NodeList(); }
 ;
 
 declaration_list
@@ -310,15 +313,16 @@ statement_list
 
 
 
-// selection_statement
-//   : IF '(' expression ')' statement                                               { $$ = new IfStatement(NodePtr($3), NodePtr($5)); }
-//   | IF '(' expression ')' statement ELSE statement                                 { $$ = new IfElseStatement(NodePtr($3), NodePtr($5), NodePtr($7)); }
-// ;
+selection_statement
+  : IF '(' expression ')' statement { $$ = new IfStatement(NodePtr($3), NodePtr($5)); }
+  | IF '(' expression ')' statement ELSE statement { $$ = new IfElseStatement(NodePtr($3), NodePtr($5), NodePtr($7)); }
+;
 
-// iteration_statement
-//   : WHILE '(' expression ')' statement                                             { $$ = new WhileStatement(NodePtr($3), NodePtr($5)); }
-//   | FOR '(' expression_statement expression_statement ')' statement                 { /* etc. */ }
-// ;
+iteration_statement
+  : WHILE '(' expression ')' statement { $$ = new WhileStatement(NodePtr($3), NodePtr($5)); }
+  | FOR '(' expression_statement expression_statement ')' statement {$$ = new ForStatement(NodePtr($3), NodePtr($4), NodePtr($6));}
+  | FOR '(' expression_statement expression_statement expression ')' statement {$$ = new ForStatement(NodePtr($3), NodePtr($4), NodePtr($5), NodePtr($7));}
+  ;
 
 jump_statement
   : RETURN ';'                                                                     { $$ = new ReturnStatement(nullptr); }

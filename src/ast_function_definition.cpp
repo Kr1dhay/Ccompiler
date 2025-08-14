@@ -11,6 +11,7 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
 
     std::string functionName = declarator_->getName();
 
+
     stream << ".globl " << functionName << std::endl;
     stream << functionName << ":" << std::endl;
 
@@ -22,6 +23,7 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
 
 
     context.enterScope(); // Updates internal state
+    context.setCurrentEndLabel(context.makeLabel("func_end"));
 
 
     if (compound_statement_ != nullptr)
@@ -31,7 +33,7 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
 
 
     // === Epilogue ===
-
+    stream << context.getCurrentEndLabel() << ":" << std::endl;
     stream << "lw ra, -4(s0)" << std::endl;
     stream << "lw s0, -8(s0)" << std::endl;
     stream << "addi sp, sp, " << context.getCurrentFrameSize() << std::endl;

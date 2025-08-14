@@ -1,7 +1,7 @@
 C90 to RISC-V compiler written using C++
 ==============================
 
-This project was part of the Instruction Architectures and Compilers module taught at Imperial College London.  My compiler was written using C++ and supports all basic and intermediate features described [here](docs/c_compiler.md)
+This project was part of the Instruction Architectures and Compilers module taught at Imperial College London.  My compiler was written using C++ and supports all basic and most intermediate features described [here](docs/c_compiler.md)
 
 The source language is pre-processed C90, and the target language is RISC-V assembly. The target environment is Ubuntu 22.04, as described [here](docs/environment_guide.md). See [here](docs/c_compiler.md) for the full set of requirements and more information about the testing environment.
 
