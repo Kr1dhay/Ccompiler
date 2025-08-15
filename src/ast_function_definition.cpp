@@ -25,6 +25,8 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
     context.enterScope(); // Updates internal state
     context.setCurrentEndLabel(context.makeLabel("func_end"));
 
+    declarator_->EmitRISC(stream, context);
+    context.freeRegister(10);
 
     if (compound_statement_ != nullptr)
     {
@@ -32,12 +34,17 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
     }
 
 
+    for (int i = 11; i <= 17; ++i) {
+        context.freeRegister(i);
+    }
+
     // === Epilogue ===
     stream << context.getCurrentEndLabel() << ":" << std::endl;
     stream << "lw ra, -4(s0)" << std::endl;
     stream << "lw s0, -8(s0)" << std::endl;
     stream << "addi sp, sp, " << context.getCurrentFrameSize() << std::endl;
     stream << "jr ra" << std::endl;
+
 
     context.exitScope();  // Now it's safe to pop the frame
 
