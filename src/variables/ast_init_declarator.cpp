@@ -20,7 +20,7 @@ namespace ast {
                 stream << "mv x" << var.reg << ", a0" << std::endl;
             } else {
                 // Store into memory
-                stream << "sw a0, " << offset << "(fp)" << std::endl;
+                stream << "sw a0, " << offset << "(s0)" << std::endl;
             }
         }
 

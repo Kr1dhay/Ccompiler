@@ -1,20 +1,22 @@
-// #include "ast_parameter_declaration.hpp"
+#include "ast_parameter_declaration.hpp"
 
 
-// namespace ast{
+namespace ast{
 
-//     void ParameterDeclaration::EmitRISC(std::ostream& stream, Context& context) const {
-//         // Emit RISC code for the parameter declaration
-//     }
+    void ParameterDeclaration::EmitRISC(std::ostream& stream, Context& context) const {
+        context.setCurrentVariableSize(declaration_specifiers_);
 
-//     void ParameterDeclaration::Print(std::ostream& stream) const {
-//         stream << "ParameterDeclaration: ";
-//         if (declaration_specifiers_) {
-//             declaration_specifiers_->Print(stream);
-//         }
-//         if (declarator_) {
-//             declarator_->Print(stream);
-//         }
-//     }
+        std::string paramName = declarator_->getName();
 
-// }
+        context.addLocalVarParam(paramName, stream);
+
+    }
+
+    void ParameterDeclaration::Print(std::ostream& stream) const {
+        stream << declaration_specifiers_ << " ";
+        if (declarator_) {
+            declarator_->Print(stream);
+        }
+    }
+
+}

@@ -8,7 +8,7 @@ void Identifier::EmitRISC(std::ostream& stream, Context& context) const
     if (var.reg != -1) {
         stream << "mv a0, x" << var.reg << std::endl;
     } else {
-        stream << "lw a0, " << var.offset << "(fp)" << std::endl;
+        stream << "lw a0, " << var.offset << "(s0)" << std::endl;
     }
 }
 

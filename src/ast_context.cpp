@@ -25,6 +25,16 @@ namespace ast {
         return -1; // No available register
     }
 
+    int RegisterFile::allocateParam(){
+        for (int i=10; i<=17; ++i) {
+            if (usedRegs[i] == 0) {
+                useReg(i);
+                return i;
+            }
+        }
+        return -1; // No available register
+    }
+
 
 
     // Context
@@ -142,6 +152,41 @@ namespace ast {
         return stack.back().frameSize;
     }
 
+    void Context::addLocalVarParam(const std::string& name, std::ostream &stream) {
+        if (stack.empty()) {
+            throw std::runtime_error("No active stack frame to add local variable.");
+        }
+        auto& frame = stack.back();
+        if (frame.inFrame(name)) {
+            throw std::runtime_error("Variable already exists in the current scope: " + name);
+        }
+
+        stream << "addi sp, sp, -" << currentVariableSize << std::endl;
+
+        int reg = registers.allocateParam();
+
+
+        frame.frameSize += currentVariableSize;
+        int offsetFromFp = -frame.frameSize; // locals go negative from fp
+
+        if (reg < 10 || reg > 17) {
+            throw std::runtime_error("Only up to 8 integer params (a0..a7) supported for now");
+        }
+
+        if (reg == 10) {
+            // move a0 since it will be overwritten
+            stream << "sw x" << reg << ", " << offsetFromFp << "(s0)" << std::endl;
+            reg = -1;
+        }
+
+
+
+        frame.varBindings[name] = { currentVariableSize, offsetFromFp, reg, TypeSpecifier::INT };
+
+        return;
+
+    }
+
     int Context::allocateRegister(std::ostream &stream) {
         int reg = registers.allocate();
         if (reg != -1) return reg;
@@ -151,7 +196,7 @@ namespace ast {
         for (auto &pair : stack.back().varBindings) {
             variable &var = pair.second;
             if (var.reg != -1) {
-                stream << "sw x" << var.reg << ", " << var.offset << std::endl;
+                stream << "sw x" << var.reg << ", " << var.offset << "(s0)" << std::endl;
                 registers.freeReg(var.reg);
                 var.reg = -1;
                 break;
@@ -163,6 +208,53 @@ namespace ast {
 
     void Context::freeRegister(int reg) {
         registers.freeReg(reg);
+    }
+
+    void Context::freeParamRegisters(std::ostream &stream){
+        if (stack.empty()) throw std::runtime_error("No active stack frame");
+        auto &frame = stack.back();
+
+        for (auto &kv : frame.varBindings) {
+            variable &v = kv.second;
+
+            // only spill if the var is currently living in an arg register
+            if (v.reg >= 10 && v.reg <= 17) {          // a0..a7
+
+                stream << "sw x" << v.reg << ", " << v.offset << "(s0)" << std::endl;
+                registers.freeReg(v.reg);
+                v.reg = -1;                             // now lives in memory only
+            }
+        }
+
+
+    }
+
+    void Context::freeAllRegisters(std::ostream &stream){
+        if (stack.empty()) throw std::runtime_error("No active stack frame");
+        auto &frame = stack.back();
+
+        for (auto &kv : frame.varBindings) {
+            variable &v = kv.second;
+
+            // only spill if the var is currently living in a register
+            if (v.reg != -1) {
+                stream << "sw x" << v.reg << ", " << v.offset << "(s0)" << std::endl;
+                registers.freeReg(v.reg);
+                v.reg = -1;                             // now lives in memory only
+            }
+        }
+
+
+    }
+
+    int Context::storeArgument(){
+        for (int i=10; i <= 17; ++i) {
+            if (!registers.usedRegs[i]) {
+                registers.useReg(i);
+                return i;
+            }
+        }
+        return -1;  // No available registers
     }
 
 }

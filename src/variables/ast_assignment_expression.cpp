@@ -18,7 +18,7 @@ void AssignmentExpression::EmitRISC(std::ostream& s, Context& context) const {
     if (var.reg != -1) {
         s << "mv x" << var.reg << ", a0" << std::endl;
     } else {
-        s << "sw a0, " << var.offset << "(fp)" << std::endl;
+        s << "sw a0, " << var.offset << "(s0)" << std::endl;
     }
 
 
