@@ -14,6 +14,7 @@
 #include "ast_context.hpp"
 #include "operators/ast_binary_operator.hpp"
 #include "operators/ast_logic_operator.hpp"
+#include "operators/ast_conditional_operator.hpp"
 #include "ast/ast_root.hpp"
 #include "variables/ast_init_declarator.hpp"
 #include "variables/ast_assignment_expression.hpp"

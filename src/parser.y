@@ -186,7 +186,7 @@ logical_or_expression
 
 conditional_expression
   : logical_or_expression          { $$ = $1; }
-//   | logical_or_expression '?' expression ':' conditional_expression
+  | logical_or_expression '?' expression ':' conditional_expression { $$ = new ConditionalOperator(NodePtr($1), NodePtr($3), NodePtr($5)); }
   ;
 
 
