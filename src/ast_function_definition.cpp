@@ -34,9 +34,7 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
     }
 
 
-    for (int i = 11; i <= 17; ++i) {
-        context.freeRegister(i);
-    }
+    context.freeParamRegisters(stream);
 
     // === Epilogue ===
     stream << context.getCurrentEndLabel() << ":" << std::endl;

@@ -54,7 +54,7 @@
 %type <node> relational_expression equality_expression and_expression
 %type <node> exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <node> conditional_expression assignment_expression expression constant_expression
-%type <node> declaration selection_statement iteration_statement
+%type <node> declaration selection_statement iteration_statement argument_expression_list
 %type <node> declarator direct_declarator init_declarator parameter_list
 %type <node> statement initializer expression_statement parameter_declaration
 %type <node> statement_list declaration_list init_declarator_list
@@ -70,9 +70,12 @@ ROOT
 ;
 
 translation_unit
-  : external_declaration           { $$ = $1; }
-  | translation_unit external_declaration
-;
+  : external_declaration { $$ = new NodeList(NodePtr($1)); }
+  | translation_unit external_declaration {
+        static_cast<NodeList*>($1)->PushBack(NodePtr($2));
+        $$ = $1;
+      }
+  ;
 
 external_declaration
   : function_definition            { $$ = $1; }
@@ -97,7 +100,16 @@ primary_expression
 
 postfix_expression
   : primary_expression            { $$ = $1; }
-;
+  | postfix_expression '(' ')'
+        { $$ = new FunctionCall(NodePtr($1), nullptr); }
+  | postfix_expression '(' argument_expression_list ')'
+        { $$ = new FunctionCall(NodePtr($1), NodePtr($3)); }
+  ;
+
+argument_expression_list
+	: assignment_expression { $$ = new NodeList(NodePtr(new ArgumentExpression(NodePtr($1)))); }
+	| argument_expression_list ',' assignment_expression { static_cast<NodeList*>($1)->PushBack(NodePtr(new ArgumentExpression(NodePtr($3)))); $$ = $1; }
+	;
 
 unary_expression
   : postfix_expression            { $$ = $1; }

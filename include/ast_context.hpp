@@ -124,6 +124,9 @@ class Context
 
         void addLocalVarParam(const std::string& name, std::ostream &stream);
 
+        void freeParamRegisters(std::ostream &stream);
+        int storeArgument();
+
 };
 
 // What could go inside Context now:
