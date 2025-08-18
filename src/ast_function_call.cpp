@@ -7,7 +7,7 @@ namespace ast{
     void FunctionCall::EmitRISC(std::ostream &stream, Context &context) const {
 
         std::string funcName = function_->getName();
-        context.freeParamRegisters(stream);
+        context.freeAllRegisters(stream);
 
         if (arguments_) {
             context.freeRegister(28);

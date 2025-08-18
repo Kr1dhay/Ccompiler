@@ -229,6 +229,24 @@ namespace ast {
 
     }
 
+    void Context::freeAllRegisters(std::ostream &stream){
+        if (stack.empty()) throw std::runtime_error("No active stack frame");
+        auto &frame = stack.back();
+
+        for (auto &kv : frame.varBindings) {
+            variable &v = kv.second;
+
+            // only spill if the var is currently living in a register
+            if (v.reg != -1) {
+                stream << "sw x" << v.reg << ", " << v.offset << "(s0)" << std::endl;
+                registers.freeReg(v.reg);
+                v.reg = -1;                             // now lives in memory only
+            }
+        }
+
+
+    }
+
     int Context::storeArgument(){
         for (int i=10; i <= 17; ++i) {
             if (!registers.usedRegs[i]) {

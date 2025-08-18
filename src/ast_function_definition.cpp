@@ -34,7 +34,7 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
     }
 
 
-    context.freeParamRegisters(stream);
+    context.freeAllRegisters(stream);
 
     // === Epilogue ===
     stream << context.getCurrentEndLabel() << ":" << std::endl;

@@ -7,6 +7,7 @@ void BinaryOperator::EmitRISC(std::ostream &stream, Context &context) const
 {
     // Evaluate left and right subexpressions
 
+
     int leftReg = context.allocateRegister(stream);
     left_->EmitRISC(stream, context);
     stream << "mv x" << leftReg << ", a0" << std::endl;
