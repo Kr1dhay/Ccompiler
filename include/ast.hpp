@@ -26,5 +26,8 @@
 #include "ast_for_statement.hpp"
 #include "ast_function_call.hpp"
 #include "ast_argument_expression.hpp"
+#include "ast_switch_statement.hpp"
+#include "ast_case_statement.hpp"
+#include "ast_break_statement.hpp"
 
 ast::NodePtr ParseAST(std::string file_name);
