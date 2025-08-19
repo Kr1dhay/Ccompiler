@@ -57,7 +57,7 @@
 %type <node> declaration selection_statement iteration_statement argument_expression_list
 %type <node> declarator direct_declarator init_declarator parameter_list
 %type <node> statement initializer expression_statement parameter_declaration
-%type <node> statement_list declaration_list init_declarator_list
+%type <node> statement_list declaration_list init_declarator_list labeled_statement
 %type <type_specifier> type_specifier declaration_specifiers
 
 
@@ -186,7 +186,7 @@ logical_or_expression
 
 conditional_expression
   : logical_or_expression          { $$ = $1; }
-//   | logical_or_expression '?' expression ':' conditional_expression
+  | logical_or_expression '?' expression ':' conditional_expression { $$ = new ConditionalOperator(NodePtr($1), NodePtr($3), NodePtr($5)); }
   ;
 
 
@@ -272,12 +272,19 @@ expression_statement
 ;
 
 statement
-  : compound_statement                                                             { $$ = $1; }
-  | jump_statement                                                                 { $$ = $1; }
+  : labeled_statement { $$ = $1; }
+  | compound_statement                                                             { $$ = $1; }
   | expression_statement                                                            { $$ = $1; }
   | selection_statement                                                            { $$ = $1; }
   | iteration_statement                                                             { $$ = $1; }
+  | jump_statement                                                                 { $$ = $1; }
 ;
+
+labeled_statement
+	: CASE constant_expression ':' statement {$$ = new CaseStatement(NodePtr($2), NodePtr($4));}
+	| DEFAULT ':' statement {$$ = new DefaultCaseStatement(NodePtr($3));}
+	;
+
 
 compound_statement
   : '{' statement_list '}' { $$ = $2; }
@@ -329,6 +336,7 @@ statement_list
 selection_statement
   : IF '(' expression ')' statement { $$ = new IfStatement(NodePtr($3), NodePtr($5)); }
   | IF '(' expression ')' statement ELSE statement { $$ = new IfElseStatement(NodePtr($3), NodePtr($5), NodePtr($7)); }
+  | SWITCH '(' expression ')' statement {$$ = new SwitchStatement(NodePtr($3), NodePtr($5));}
 ;
 
 iteration_statement
@@ -340,6 +348,7 @@ iteration_statement
 jump_statement
   : RETURN ';'                                                                     { $$ = new ReturnStatement(nullptr); }
   | RETURN expression ';'                                                          { $$ = new ReturnStatement(NodePtr($2)); }
+  | BREAK ';'                                                                     { $$ = new BreakStatement(); }
 ;
 
 %%

@@ -9,6 +9,7 @@
 #include <fstream>
 #include <cassert>
 #include <utility>
+#include <optional>
 
 #pragma once
 
@@ -75,7 +76,9 @@ struct stackFrame
     std::string startLabel; // for continue/break
     std::string endLabel;
     // Specifier returnType; // comment out for now
-
+    std::vector<std::string> switchEnds;
+    std::vector<int> switchRegisters;
+    std::optional<std::string> pendingNextCase;
 
     bool inFrame(std::string name) const
     {
@@ -127,6 +130,20 @@ class Context
         void freeAllRegisters(std::ostream &stream);
         void freeParamRegisters(std::ostream &stream);
         int storeArgument();
+
+        void setSwitchEnd(std::string label);
+        std::string getSwitchEnd() const;
+
+        std::string popSwitchEnd();
+
+        void setSwitchRegister(int reg);
+        int getSwitchRegister() const;
+
+        int popSwitchRegister();
+
+        void setPendingNextCase(const std::string &l);
+        std::optional<std::string> getPendingNextCase() const;
+        void clearPendingNextCase();
 
 };
 

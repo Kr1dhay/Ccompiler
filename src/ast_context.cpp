@@ -257,4 +257,60 @@ namespace ast {
         return -1;  // No available registers
     }
 
+    void Context::setSwitchEnd(std::string label){
+        if (stack.empty()) throw std::runtime_error("No active stack frame");
+        stack.back().switchEnds.push_back(label);
+    }
+
+    std::string Context::getSwitchEnd() const {
+        if (stack.empty()) throw std::runtime_error("No active stack frame");
+        return stack.back().switchEnds.back();
+    }
+
+    std::string Context::popSwitchEnd() {
+        if (stack.empty()) throw std::runtime_error("No active stack frame");
+        std::string label = stack.back().switchEnds.back();
+        stack.back().switchEnds.pop_back();
+        return label;
+    }
+
+    void Context::setSwitchRegister(int reg){
+        if (stack.empty()) throw std::runtime_error("No active stack frame");
+        stack.back().switchRegisters.push_back(reg);
+    }
+
+    int Context::getSwitchRegister() const {
+        if (stack.empty()) throw std::runtime_error("No active stack frame");
+        return stack.back().switchRegisters.back();
+    }
+
+    int Context::popSwitchRegister() {
+        if (stack.empty()) throw std::runtime_error("No active stack frame");
+        int reg = stack.back().switchRegisters.back();
+        registers.freeReg(reg);
+        stack.back().switchRegisters.pop_back();
+        return reg;
+
+    }
+
+
+
+    void Context::setPendingNextCase(const std::string &l) {
+        if (stack.empty()) throw std::runtime_error("No active stack frame");
+        stack.back().pendingNextCase = l;
+    }
+
+    std::optional<std::string> Context::getPendingNextCase() const {
+        if (stack.empty()) throw std::runtime_error("No active stack frame");
+        return stack.back().pendingNextCase;
+    }
+
+
+    void Context::clearPendingNextCase() {
+        if (stack.empty()) throw std::runtime_error("No active stack frame");
+        stack.back().pendingNextCase.reset();
+    }
+
+
+
 }
