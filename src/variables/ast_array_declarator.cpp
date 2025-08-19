@@ -15,4 +15,8 @@ namespace ast{
         stream << "array" << std::endl;
     }
 
+    std::string ArrayDeclarator::getName() const {
+        return direct_declarator_->getName();
+    }
+
 }

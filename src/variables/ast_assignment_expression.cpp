@@ -15,12 +15,19 @@ void AssignmentExpression::EmitRISC(std::ostream& s, Context& context) const {
         }
     }
 
-    if (var.reg != -1) {
-        s << "mv x" << var.reg << ", a0" << std::endl;
-    } else {
-        s << "sw a0, " << var.offset << "(s0)" << std::endl;
-    }
+    if (var.length == 1) {
+        if (var.reg != -1) {
+            s << "mv x" << var.reg << ", a0" << std::endl;
+        } else {
+            s << "sw a0, " << var.offset << "(s0)" << std::endl;
+        }
+    } else{
+        int regIdx = context.allocateRegister(s);
+        left_->EmitAddress(s, context, regIdx);
 
+        s << "sw a0, 0(x" << regIdx << ")" << std::endl; // store value in array
+        context.freeRegister(regIdx);
+    }
 
 }
 

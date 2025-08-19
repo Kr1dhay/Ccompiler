@@ -16,6 +16,13 @@ int Node::getValue() const
 }
 
 
+void Node::EmitAddress(std::ostream& stream, Context& context, int destReg) const{
+    std::cerr << "Tried to EmitAddress of something not implemented" << std::endl;
+    stream << "error" << std::endl;
+    context.freeRegister(destReg);
+}
+
+
 void NodeList::PushBack(NodePtr item)
 {
     nodes_.push_back(std::move(item));
@@ -32,6 +39,7 @@ void NodeList::EmitRISC(std::ostream& stream, Context& context) const
         node->EmitRISC(stream, context);
     }
 }
+
 
 void NodeList::Print(std::ostream& stream) const
 {

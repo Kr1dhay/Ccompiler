@@ -104,7 +104,7 @@ postfix_expression
         { $$ = new FunctionCall(NodePtr($1), nullptr); }
   | postfix_expression '(' argument_expression_list ')'
         { $$ = new FunctionCall(NodePtr($1), NodePtr($3)); }
-//   | postfix_expression '[' expression ']' { $$ = new ArraySubscript(NodePtr($1), NodePtr($3)); }
+  | postfix_expression '[' expression ']' { $$ = new ArraySubscript(NodePtr($1), NodePtr($3)); }
   ;
 
 argument_expression_list

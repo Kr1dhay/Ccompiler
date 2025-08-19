@@ -23,4 +23,10 @@ std::string Identifier::getName() const
     return identifier_;
 }
 
+void Identifier::EmitAddress(std::ostream& stream, Context& context, int destReg) const {
+
+        const variable& var = context.getVariable(identifier_);
+        stream << "addi x" << destReg << ", s0, " << var.offset << std::endl;
+    }
+
 } // namespace ast

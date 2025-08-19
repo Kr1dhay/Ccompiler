@@ -16,6 +16,7 @@ public:
     virtual void Print(std::ostream& stream) const = 0;
     virtual std::string getName() const;
     virtual int getValue() const;
+    virtual void EmitAddress(std::ostream& stream, Context& context, int destReg) const;
 
 };
 
@@ -38,6 +39,7 @@ public:
     virtual void EmitRISC(std::ostream& stream, Context& context) const;
     virtual void Print(std::ostream& stream) const;
     int getSize() const;
+
 };
 
 } // namespace ast
