@@ -35,8 +35,9 @@ class BinaryOperator : public Node{
         : op_(op), left_(std::move(left)), right_(std::move(right)) {}
 
 
-    virtual void EmitRISC(std::ostream &stream, Context &context) const override;
-    virtual void Print(std::ostream &stream) const override;
+    void EmitRISC(std::ostream &stream, Context &context) const override;
+    void Print(std::ostream &stream) const override;
+    int getValue() const override;
 };
 
 }

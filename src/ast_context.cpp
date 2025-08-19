@@ -112,7 +112,7 @@ namespace ast {
 
         frame.frameSize += currentVariableSize;
         int offsetFromFp = -frame.frameSize; // locals go negative from fp
-        frame.varBindings[name] = { currentVariableSize, offsetFromFp, reg, TypeSpecifier::INT };
+        frame.varBindings[name] = { currentVariableSize, offsetFromFp, reg, TypeSpecifier::INT, 1 };
 
         return offsetFromFp;
 
@@ -180,12 +180,35 @@ namespace ast {
         }
 
 
-
-        frame.varBindings[name] = { currentVariableSize, offsetFromFp, reg, TypeSpecifier::INT };
+        frame.varBindings[name] = { currentVariableSize, offsetFromFp, reg, TypeSpecifier::INT , 1};
 
         return;
-
     }
+
+
+
+    void Context::addLocalArray(const std::string& name, int length, std::ostream& stream) {
+            if (stack.empty()) {
+                throw std::runtime_error("No active stack frame to add local array.");
+            }
+            auto& frame = stack.back();
+            if (frame.varBindings.count(name)) {
+                throw std::runtime_error("Variable already exists: " + name);
+            }
+
+            int totalSize = currentVariableSize * length;
+            // round up for alignment if you want (e.g. to 16)
+            // int alignedSize = (totalSize + 15) & ~15;
+
+            stream << "addi sp, sp, -" << totalSize << std::endl;
+
+            int offsetFromFp = -frame.frameSize-currentVariableSize; // grows negatively
+            frame.frameSize += totalSize;
+
+            // record
+            frame.varBindings[name] = { currentVariableSize, offsetFromFp, -1, TypeSpecifier::INT, length};
+    }
+
 
     int Context::allocateRegister(std::ostream &stream) {
         int reg = registers.allocate();

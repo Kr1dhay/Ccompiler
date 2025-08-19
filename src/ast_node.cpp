@@ -9,6 +9,11 @@ std::string Node::getName() const
     return "Error: getName not implemented for this Node type";
 }
 
+int Node::getValue() const
+{
+    std::cerr << "Tried to getValue of expression of something not implemented" << std::endl;
+    return -1;
+}
 
 
 void NodeList::PushBack(NodePtr item)

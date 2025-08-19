@@ -104,6 +104,7 @@ postfix_expression
         { $$ = new FunctionCall(NodePtr($1), nullptr); }
   | postfix_expression '(' argument_expression_list ')'
         { $$ = new FunctionCall(NodePtr($1), NodePtr($3)); }
+//   | postfix_expression '[' expression ']' { $$ = new ArraySubscript(NodePtr($1), NodePtr($3)); }
   ;
 
 argument_expression_list
@@ -262,7 +263,7 @@ init_declarator
 
 initializer
   : assignment_expression  {$$ = $1;}
-//   | '{' initializer_list '}'                                                       { /* for aggregates later */ }
+//   | '{' initializer_list '}'                                                       { /* for arrays later */ }
 // ;
 
 /*--- Statements, including declarations and expressions ---*/
@@ -312,6 +313,7 @@ direct_declarator
 		$$ = new DirectDeclarator(NodePtr($1), nullptr);
 	}
     | direct_declarator '(' parameter_list ')' { $$ = new DirectDeclarator(NodePtr($1), NodePtr($3)); }
+    | direct_declarator '[' constant_expression ']' {$$ = new ArrayDeclarator(NodePtr($1), NodePtr($3));}
 	;
 
 
