@@ -12,4 +12,9 @@ void IntConstant::Print(std::ostream& stream) const
     stream << value_;
 }
 
+int IntConstant::getValue() const {
+    return value_;
+}
+
+
 } // namespace ast

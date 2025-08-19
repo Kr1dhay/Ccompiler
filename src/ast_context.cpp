@@ -112,7 +112,7 @@ namespace ast {
 
         frame.frameSize += currentVariableSize;
         int offsetFromFp = -frame.frameSize; // locals go negative from fp
-        frame.varBindings[name] = { currentVariableSize, offsetFromFp, reg, TypeSpecifier::INT };
+        frame.varBindings[name] = { currentVariableSize, offsetFromFp, reg, TypeSpecifier::INT, 1 };
 
         return offsetFromFp;
 
@@ -180,12 +180,34 @@ namespace ast {
         }
 
 
-
-        frame.varBindings[name] = { currentVariableSize, offsetFromFp, reg, TypeSpecifier::INT };
+        frame.varBindings[name] = { currentVariableSize, offsetFromFp, reg, TypeSpecifier::INT , 1};
 
         return;
-
     }
+
+
+
+void Context::addLocalArray(const std::string& name, int length, std::ostream& s) {
+    if (stack.empty()) throw std::runtime_error("No active frame");
+    auto &frame = stack.back();
+    if (frame.varBindings.count(name)) throw std::runtime_error("Duplicate var: " + name);
+
+    const int elemSize = 4;               // int
+    const int totalSize = elemSize * length;
+
+    s << "addi sp, sp, -" << totalSize << "\n";
+
+    // Base offset is at the bottom of this block we just reserved
+    const int offsetFromFp = -(frame.frameSize + totalSize);
+    frame.frameSize += totalSize;
+
+    // Record: size = elemSize (so “size” means elem size for arrays),
+    // offset = base, reg = -1, type = INT, length = length
+    frame.varBindings[name] = { elemSize, offsetFromFp, -1, TypeSpecifier::INT, length };
+}
+
+
+
 
     int Context::allocateRegister(std::ostream &stream) {
         int reg = registers.allocate();

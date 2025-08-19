@@ -111,5 +111,29 @@ void BinaryOperator::Print(std::ostream &stream) const
     stream << ")";
 }
 
+int BinaryOperator::getValue() const {
+    int l = left_->getValue();
+    int r = right_->getValue();
+    switch (op_) {
+        case BinOp::Add: return l + r;
+        case BinOp::Sub: return l - r;
+        case BinOp::Mul: return l * r;
+        case BinOp::Div: return l / r;
+        case BinOp::Mod: return l % r;
+        case BinOp::Shl: return l << r;
+        case BinOp::Shr: return l >> r;
+        case BinOp::BitAnd: return l & r;
+        case BinOp::BitOr: return l | r;
+        case BinOp::BitXor: return l ^ r;
+        case BinOp::Lt: return l < r;
+        case BinOp::Gt: return l > r;
+        case BinOp::Leq: return l <= r;
+        case BinOp::Geq: return l >= r;
+        case BinOp::Eq: return l == r;
+        case BinOp::Neq: return l != r;
+        default: throw std::runtime_error("unsupported op in const expr");
+    }
+}
+
 
 }

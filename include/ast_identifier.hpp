@@ -16,6 +16,8 @@ public:
     void Print(std::ostream& stream) const override;
 
     std::string getName() const override;
+
+    void EmitAddress(std::ostream& stream, Context& context, int destReg) const override;
 };
 
 } // namespace ast

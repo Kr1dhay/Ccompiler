@@ -52,6 +52,7 @@ struct variable
     int offset;        // fp-relative offset
     int reg;           // register allocated, -1 if in memory
     TypeSpecifier type;
+    int length;
 };
 
 // === Function ===
@@ -126,6 +127,8 @@ class Context
         void freeRegister(int reg);
 
         void addLocalVarParam(const std::string& name, std::ostream &stream);
+
+        void addLocalArray(const std::string& name, int length, std::ostream &stream);
 
         void freeAllRegisters(std::ostream &stream);
         void freeParamRegisters(std::ostream &stream);
